@@ -1,0 +1,84 @@
+<link rel="import" href="../iron-ajax/iron-ajax.html"/>
+<link rel="import" href="../iron-image/iron-image.html"/>
+<link rel="import" href="../aldo-current/aldo-current.html"/>
+<link rel="import" href="../aldo-forecast/aldo-forecast.html"/>
+<dom-module id="aldo-weather">
+    <style>
+        :host{
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: block;
+        }
+        iron-image{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: lightgray;
+        }
+    </style>
+    <template>
+        <iron-image sizing="cover" preload src="{{imageSrc}}">
+        </iron-image>
+        <iron-ajax
+            auto
+            handle-as="json"
+            url="http://api.openweathermap.org/data/2.5/weather?lat=-17.7482098&lon=-63.1855403&appid=bd82977b86bf27fb59a04b61b657fb6f&units=metric&lang=es"
+            on-response="getCurrentData">
+        </iron-ajax>
+        <iron-ajax
+            auto
+            handle-as="json"
+            url="http://api.openweathermap.org/data/2.5/forecast/daily?lat=-17.7567898&lon=-63.2918363&appid=bd82977b86bf27fb59a04b61b657fb6f&cnt=16&mode=json&lang=es&units=metric"
+            on-response="getForecastData">
+        </iron-ajax>
+        <!--<aldo-current id="currentWeather"></aldo-current>-->
+        <aldo-forecast id="forecast"></aldo-forecast>
+    </template>
+</dom-module>
+<script src="../moment/moment.js"></script>
+<script src="../moment/locale/es.js"></script>
+<script>
+    Polymer({
+        is: "aldo-weather",
+        properties: {
+            imageSrc: String
+        },
+        ready: function(){
+        },
+        getCurrentData: function(event){
+            console.log(event.detail.response);
+            var response = event.detail.response;
+            this.imageSrc = "img/" + response.weather[0].icon + "_bg.jpg";
+            //var current = this.$.currentWeather;
+            //console.log(current);
+            //current.temperatura = Number(response.main.temp).toFixed(1) + "°C";
+            //current.humedad = Number(response.main.humidity) + "%";
+            //current.ciudad = response.name;
+            //current.descripcion = response.weather[0].description;
+            //current.icon = "" + response.weather[0].icon + ".png";
+        },
+        getForecastData: function(event){
+            console.log(event.detail.response);
+            var response = event.detail.response;
+            var forecast = this.$.forecast;
+            var list = response.list;
+            console.log(list);
+            for (var i = 0; i < list.length; i++) 
+            {
+                list[i].icon = "http://openweathermap.org/img/w/" + list[i].weather[0].icon + ".png";
+                list[i].desc = this.capitalize(list[i].weather[0].description);
+                list[i].humidity = list[i].humidity + "%";
+                list[i].temp.max = Number(list[i].temp.max).toFixed(1) + "°C";
+                list[i].temp.min = Number(list[i].temp.min).toFixed(1) + "°C";
+
+                var day = moment.unix(Number(list[i].dt));
+                list[i].date = day.format("dddd[, ]DD/MM/YYYY");
+            };
+            forecast.list = list;
+        },
+        capitalize: function(s){
+            return s[0].toUpperCase() + s.slice(1);
+        }
+    });
+</script>

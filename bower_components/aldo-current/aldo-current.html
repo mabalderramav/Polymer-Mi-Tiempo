@@ -1,0 +1,48 @@
+<link rel="import" href="../paper-styles/paper-styles.html"/>
+<dom-module id="aldo-current">
+    <style is="custom-style">
+        :host{
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            text-align: right;
+            color: white;
+        }
+        span{
+            display: block;
+        }
+        .city, .desc, .humidity, .temp{
+            font-weight: bold;
+            font-family: 'Roboto','Noto';
+            text-shadow: 0 0 5px black;
+        }
+        .city{
+            font-size: 3em;
+        }
+        .desc, .humidity{
+            font-size: 2em;
+        }
+        .temp{
+            font-size: 4em;
+        }
+    </style>
+    <template>
+        <span class="humidity">{{humedad}}</span>
+        <span class="desc">{{descripcion}}</span>
+        <span class="city">{{ciudad}}</span>
+        <span class="temp">{{temperatura}}</span>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "aldo-current",
+        properties: {
+            humedad: Number,
+            temperatura: Number,
+            descripcion: String,
+            ciudad: String
+        },
+        ready: function(){
+        }
+    });
+</script>
